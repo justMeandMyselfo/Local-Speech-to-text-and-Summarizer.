@@ -1,13 +1,15 @@
 import streamlit as st
-import subprocess
-import os
+import whisper
 import tempfile
-import sys
-import glob
-import chardet
 import os
+import chardet
+import subprocess
 
-os.environ["PATH"] += os.pathsep + os.path.abspath(".")
+# Add local ffmpeg to PATH
+ffmpeg_path = os.path.abspath("./ffmpeg.exe")
+if os.path.exists(ffmpeg_path):
+    os.environ["PATH"] += os.pathsep + os.path.dirname(ffmpeg_path)
+
 st.set_page_config(page_title="Meeting Summarizer", layout="centered")
 st.title("🎙️ Local Meeting Summarizer")
 st.write("Upload a meeting audio file. This app will transcribe and summarize it entirely **offline** for privacy.")
@@ -32,35 +34,13 @@ if uploaded_file:
 
         with st.spinner("Transcribing with Whisper..."):
             try:
-                temp_output_dir = tempfile.gettempdir()
-                python_executable = sys.executable
+                model = whisper.load_model("base")
+                result = model.transcribe(audio_path, language="fr")
 
-                result = subprocess.run(
-                    [python_executable, "-m", "whisper", audio_path, "--language", "French", "--output_format", "txt", "--output_dir", temp_output_dir],
-                    capture_output=True,
-                    text=True
-                )
-
-                st.text("Whisper stdout:\n" + result.stdout)
-                st.text("Whisper stderr:\n" + result.stderr)
-
-                if result.returncode != 0:
-                    st.error("Whisper failed:\n" + result.stderr)
+                transcript = result.get("text", "").strip()
+                if not transcript:
+                    st.error("❌ No transcript was generated.")
                     st.stop()
-
-                # Find latest .txt file
-                txt_files = glob.glob(os.path.join(temp_output_dir, "*.txt"))
-                if not txt_files:
-                    st.error("No transcript file found.")
-                    st.stop()
-
-                transcript_file = max(txt_files, key=os.path.getmtime)
-
-                # Read with encoding detection
-                with open(transcript_file, 'rb') as f:
-                    rawdata = f.read()
-                encoding = chardet.detect(rawdata)['encoding']
-                transcript = rawdata.decode(encoding or 'utf-8', errors='ignore')
 
                 st.success("✅ Transcription complete!")
 
@@ -91,4 +71,4 @@ Please provide:
                     st.code(result.stdout, language="markdown")
 
             except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
+                st.error(f"❌ An error occurred: {str(e)}")
