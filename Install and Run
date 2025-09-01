@@ -1,0 +1,8 @@
+Streamlit : pip install streamlit
+in the correct folder run this command to start the app : streamlit run summarizer.py
+
+Ollama : https://ollama.com
+then in cmd : ollama pull mistral (or any model you might prefer).
+
+ffmpeg : https://www.gyan.dev/ffmpeg/builds/
+Download the "essential zip", extract it and drop it in the same folder than your app.
