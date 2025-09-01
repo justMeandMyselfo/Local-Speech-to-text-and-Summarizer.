@@ -1,6 +1,8 @@
 Streamlit : pip install streamlit
 in the correct folder run this command to start the app : streamlit run summarizer.py
 
+Chardet : pip install chardet
+
 Ollama : https://ollama.com
 then in cmd : ollama pull mistral (or any model you might prefer).
 
