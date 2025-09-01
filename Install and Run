@@ -4,5 +4,7 @@ in the correct folder run this command to start the app : streamlit run summariz
 Ollama : https://ollama.com
 then in cmd : ollama pull mistral (or any model you might prefer).
 
+Whisper : pip install git+https://github.com/openai/whisper.git
+
 ffmpeg : https://www.gyan.dev/ffmpeg/builds/
 Download the "essential zip", extract it and drop it in the same folder than your app.
